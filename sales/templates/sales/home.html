@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'sales/style.css' %}">
+{% endblock custom_css %}
+
+{% block scripts %}
+    <script src="{% static 'sales/home.js' %}" defer></script>
+{% endblock scripts %}
+
+{% block title %}
+home
+{% endblock title %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <div id="alert-box"></div>
+        <form id="report-form" autocomplete="off" method="POST">
+            {% csrf_token %}
+            {{report_form|crispy}}
+            <button type="submit" class="btn btn-info mt-2">save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal alert for notice save CSV file in your pc -->
+<div class="modal fade" id="csvModal" tabindex="-1" aria-labelledby="csvModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="csvModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="csv-alert-box"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if no_data %}
+    <div class="alert alert-warning" role="alert">
+        {{no_data}}
+    </div>
+{% endif %}
+
+<form method="POST" >
+    {% csrf_token %}
+    {{search_form|crispy}}
+    <button type="submit" class="btn btn-primary mt-3" >search</button>
+</form>
+<br>
+
+{% if sales_df %}
+    <p class="text-center text-capitalize fs-2">sales dataframe</p>
+
+    {{sales_df|safe}}
+    <button id="btn_to_csv" class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#csvModal"> To Csv</button>
+    <input type="hidden" id="table_to_csv" value="{{sales_df}}">
+    <br>
+    <p class="text-center text-capitalize fs-2">positions dataframe</p>
+
+    {{positions_df|safe}}
+    <br>
+    <p class="text-center text-capitalize fs-2">merged dataframe</p>
+
+    {{merged_df|safe}}
+    <br>
+    <p class="text-center text-capitalize fs-2">grouped_by dataframe</p>
+
+    {{df|safe}}
+    <br>
+    <img src="data:image/png;base64, {{chart|safe}}" id='img'>
+{% endif %}
+
+<br>
+<button class="btn btn-primary not-visible" id="report-btn" data-bs-toggle="modal" data-bs-target="#reportModal">
+  add report</button>
+
+{% endblock content %}
+
+
